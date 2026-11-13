@@ -41,16 +41,3 @@ grieves2017:
     publisher: Springer
     location: Cham
 
-lab4:
-  type: report
-  title: "Laboratorio Evaluado N°4: gemelo digital de una cámara térmica"
-  author: ["San Martín, Joaquín", "Cárdenas, Tomás"]
-  organization: "Análisis y Diseño de Sistemas Ciber-Físicos, Universidad de Concepción"
-  date: 2026-11-06
-
-curso:
-  type: report
-  title: "Proyecto Integrador: Informe de Avance, pauta de evaluación"
-  author: "Equipo docente"
-  organization: "Análisis y Diseño de Sistemas Ciber-Físicos, Universidad de Concepción"
-  date: 2026

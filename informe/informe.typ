@@ -116,14 +116,14 @@
 
 = Problema y enfoque
 
-*Contexto y problema.* El proyecto usa una cámara térmica pequeña (una caja con tapa que se precalienta con una fuente externa y luego se deja enfriar), mide su temperatura con un DHT11 conectado a una Raspberry Pi 4 y publica cada lectura por MQTT a un gemelo en Python que predice la temperatura con un modelo físico. Durante el enfriamiento se provocan eventos reales a mano, abrir la tapa y encender un ventilador USB, y se mide cuánto tarda el gemelo en detectarlos y cuántas falsas alarmas da. Corresponde al proyecto H2 de la pauta del curso @curso. El problema queda acotado a una planta térmica de una sola temperatura, dos eventos conocidos y una red local.
+*Contexto y problema.* El proyecto usa una cámara térmica pequeña (una caja con tapa que se precalienta con una fuente externa y luego se deja enfriar), mide su temperatura con un DHT11 conectado a una Raspberry Pi 4 y publica cada lectura por MQTT a un gemelo en Python que predice la temperatura con un modelo físico. Durante el enfriamiento se provocan eventos reales a mano, abrir la tapa y encender un ventilador USB, y se mide cuánto tarda el gemelo en detectarlos y cuántas falsas alarmas da. Corresponde al proyecto H2 del curso. El problema queda acotado a una planta térmica de una sola temperatura, dos eventos conocidos y una red local.
 
 *Área CPS.* Gemelos digitales y monitoreo en red: el lazo físico (planta, sensor, eventos) se sincroniza con un lazo cibernético (broker, modelo, detector) por un canal con latencia y pérdidas medibles @mqtt5 @grieves2017.
 
 *Método elegido y alternativas.* El gemelo compara la medición $y_k$ con la predicción $hat(y)_k$ de un modelo térmico de primer orden que describe el enfriamiento natural de la caja, y detecta el evento cuando el residuo $r_k = y_k - hat(y)_k$ se mantiene fuera de un umbral. Se compara con dos alternativas:
 
 - *Umbral fijo sin modelo* (alarma si $y_k < T_"ref" - Delta$ o si $|Delta y|$ supera un límite). Es simple, pero durante el enfriamiento la temperatura baja todo el tiempo, rápido al comienzo y lento al final. Si $Delta$ es chico, da falsas alarmas al inicio de cada enfriamiento; si es grande, no detecta un evento que ocurre cuando la caja ya está cerca de la temperatura ambiente. Tampoco distingue entre tapa y ventilador. Se implementará como *línea base* para comparar los KPI de la @kpis.
-- *Modelo de datos puro* (regresión o red neuronal). Necesita muchos datos que cubran todas las condiciones, y la caja entrega pocos ensayos de horas cada uno. En el Laboratorio 4 @lab4 una regresión lineal tuvo RMSE de 0,695 °C en prueba contra 0,057 °C del modelo físico, porque no generalizó a una condición que no vio al entrenar.
+- *Modelo de datos puro* (regresión o red neuronal). Necesita muchos datos que cubran todas las condiciones, y la caja entrega pocos ensayos de horas cada uno. En el Laboratorio 4 una regresión lineal tuvo RMSE de 0,695 °C en prueba contra 0,057 °C del modelo físico, porque no generalizó a una condición que no vio al entrenar.
 
 El modelo físico tiene pocos parámetros con significado físico ($tau$, $T_a$ y $T_0$), se identifica con un solo ensayo (@modelo) y su residuo tiene una interpretación directa: abrir la tapa o prender el ventilador aumenta la pérdida de calor y deja un residuo negativo sostenido.
 
@@ -160,13 +160,13 @@ Los KPI se resumen en la @kpis.
       [Latencia MQTT],
       [$L_m = t_"rec" - t_"pub"$ por mensaje; se reporta p50, p95 y máximo],
       [ms],
-      [p95 $<= 200$ ms, menos del 10 % de $T_s = 2$ s: cada lectura se procesa antes de la siguiente y no pesa frente a $L_d$. En el Lab. 4 el p95 fue 105 ms @lab4.],
+      [p95 $<= 200$ ms, menos del 10 % de $T_s = 2$ s: cada lectura se procesa antes de la siguiente y no pesa frente a $L_d$. En el Lab. 4 el p95 fue 105 ms.],
       [Marcas de tiempo en la Pi y en el gemelo, relojes sincronizados por NTP; respaldo: ida y vuelta por un tópico de eco, dividida por 2.],
       [Tasa de entrega (PDR)],
       [$"PDR" = 100 dot N_"rec" \/ N_"pub"$, con $N_"pub"$ según el número de secuencia `seq`],
       [%],
       [$>= 99$ % por hora: admite un corte de hasta 36 s (18 lecturas) por hora; en red local con QoS 1 se espera casi 100 %.],
-      [Saltos de `seq` en el registro, como en el Lab. 4 @lab4.],
+      [Saltos de `seq` en el registro, como en el Lab. 4.],
       [Falsas alarmas (FAR)],
       [$"FAR" = N_f \/ H$: alarmas sin evento asociado $N_f$ en $H$ horas de operación],
       [1/h],
@@ -245,7 +245,7 @@ La @senales detalla cada señal. El período de 2 s se elige porque el DHT11 adm
 
 = Modelo de la planta <modelo>
 
-Se reutiliza el modelo de primer orden del Laboratorio 4 @lab4. Se supone que el aire de la caja y sus paredes tienen una temperatura uniforme $T$, que la temperatura ambiente $T_a$ es constante durante un ensayo y que, retirado el calefactor y con la Pi fuera, no hay fuentes de calor dentro de la caja. Desde la temperatura inicial $T_0$ del precalentamiento, la caja se enfría según
+Se reutiliza el modelo de primer orden del Laboratorio 4. Se supone que el aire de la caja y sus paredes tienen una temperatura uniforme $T$, que la temperatura ambiente $T_a$ es constante durante un ensayo y que, retirado el calefactor y con la Pi fuera, no hay fuentes de calor dentro de la caja. Desde la temperatura inicial $T_0$ del precalentamiento, la caja se enfría según
 
 $ C (d T) / (d t) = -(T - T_a) / R, quad T(0) = T_0 $ <ec-planta>
 
