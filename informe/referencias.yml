@@ -1,0 +1,56 @@
+mqtt5:
+  type: report
+  title: "MQTT Version 5.0"
+  author: ["Banks, Andrew", "Briggs, Ed", "Borgendale, Ken", "Gupta, Rahul"]
+  organization: OASIS
+  date: 2019-03-07
+  serial-number: "OASIS Standard"
+  url: https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html
+
+mosquitto:
+  type: web
+  title: "mosquitto.conf: the configuration file for mosquitto"
+  author: Eclipse Foundation
+  url:
+    value: https://mosquitto.org/man/mosquitto-conf-5.html
+    date: 2026-11-12
+
+dht11:
+  type: report
+  title: "DHT11 Humidity & Temperature Sensor (hoja de datos)"
+  author: "Mouser Electronics / D-Robotics UK"
+  url: https://www.mouser.com/datasheet/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf
+
+rpi:
+  type: web
+  title: "Raspberry Pi hardware documentation: GPIO and the 40-pin header"
+  author: Raspberry Pi Ltd
+  url:
+    value: https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
+    date: 2026-11-12
+
+grieves2017:
+  type: chapter
+  title: "Digital Twin: Mitigating Unpredictable, Undesirable Emergent Behavior in Complex Systems"
+  author: ["Grieves, Michael", "Vickers, John"]
+  date: 2017
+  page-range: 85-113
+  parent:
+    type: book
+    title: "Transdisciplinary Perspectives on Complex Systems"
+    publisher: Springer
+    location: Cham
+
+lab4:
+  type: report
+  title: "Laboratorio Evaluado N°4: gemelo digital de una cámara térmica"
+  author: ["San Martín, Joaquín", "Cárdenas, Tomás"]
+  organization: "Análisis y Diseño de Sistemas Ciber-Físicos, Universidad de Concepción"
+  date: 2026-11-06
+
+curso:
+  type: report
+  title: "Proyecto Integrador: Informe de Avance, pauta de evaluación"
+  author: "Equipo docente"
+  organization: "Análisis y Diseño de Sistemas Ciber-Físicos, Universidad de Concepción"
+  date: 2026
