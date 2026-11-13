@@ -52,7 +52,7 @@
 
 #set math.equation(numbering: "(1)")
 
-// Recuadro de respuesta, igual que en los laboratorios anteriores
+// Recuadro de respuesta
 #let rbox(content) = {
   block(
     width: 100%,
@@ -123,7 +123,7 @@
 *Método elegido y alternativas.* El gemelo compara la medición $y_k$ con la predicción $hat(y)_k$ de un modelo térmico de primer orden que describe el enfriamiento natural de la caja, y detecta el evento cuando el residuo $r_k = y_k - hat(y)_k$ se mantiene fuera de un umbral. Se compara con dos alternativas:
 
 - *Umbral fijo sin modelo* (alarma si $y_k < T_"ref" - Delta$ o si $|Delta y|$ supera un límite). Es simple, pero durante el enfriamiento la temperatura baja todo el tiempo, rápido al comienzo y lento al final. Si $Delta$ es chico, da falsas alarmas al inicio de cada enfriamiento; si es grande, no detecta un evento que ocurre cuando la caja ya está cerca de la temperatura ambiente. Tampoco distingue entre tapa y ventilador. Se implementará como *línea base* para comparar los KPI de la @kpis.
-- *Modelo de datos puro* (regresión o red neuronal). Necesita muchos datos que cubran todas las condiciones, y la caja entrega pocos ensayos de horas cada uno. En el Laboratorio 4 una regresión lineal tuvo RMSE de 0,695 °C en prueba contra 0,057 °C del modelo físico, porque no generalizó a una condición que no vio al entrenar.
+- *Modelo de datos puro* (regresión o red neuronal). Necesita muchos datos que cubran todas las condiciones, y la caja entrega pocos ensayos de horas cada uno. Además, un modelo de datos ajustado con pocos ensayos tiende a fallar en condiciones que no vio al entrenar, como un enfriamiento que parte de otra temperatura.
 
 El modelo físico tiene pocos parámetros con significado físico ($tau$, $T_a$ y $T_0$), se identifica con un solo ensayo (@modelo) y su residuo tiene una interpretación directa: abrir la tapa o prender el ventilador aumenta la pérdida de calor y deja un residuo negativo sostenido.
 
@@ -160,13 +160,13 @@ Los KPI se resumen en la @kpis.
       [Latencia MQTT],
       [$L_m = t_"rec" - t_"pub"$ por mensaje; se reporta p50, p95 y máximo],
       [ms],
-      [p95 $<= 200$ ms, menos del 10 % de $T_s = 2$ s: cada lectura se procesa antes de la siguiente y no pesa frente a $L_d$. En el Lab. 4 el p95 fue 105 ms.],
+      [p95 $<= 200$ ms, menos del 10 % de $T_s = 2$ s: cada lectura se procesa antes de la siguiente y no pesa frente a $L_d$.],
       [Marcas de tiempo en la Pi y en el gemelo, relojes sincronizados por NTP; respaldo: ida y vuelta por un tópico de eco, dividida por 2.],
       [Tasa de entrega (PDR)],
       [$"PDR" = 100 dot N_"rec" \/ N_"pub"$, con $N_"pub"$ según el número de secuencia `seq`],
       [%],
       [$>= 99$ % por hora: admite un corte de hasta 36 s (18 lecturas) por hora; en red local con QoS 1 se espera casi 100 %.],
-      [Saltos de `seq` en el registro, como en el Lab. 4.],
+      [Saltos de `seq` en el registro.],
       [Falsas alarmas (FAR)],
       [$"FAR" = N_f \/ H$: alarmas sin evento asociado $N_f$ en $H$ horas de operación],
       [1/h],
@@ -245,7 +245,7 @@ La @senales detalla cada señal. El período de 2 s se elige porque el DHT11 adm
 
 = Modelo de la planta <modelo>
 
-Se reutiliza el modelo de primer orden del Laboratorio 4. Se supone que el aire de la caja y sus paredes tienen una temperatura uniforme $T$, que la temperatura ambiente $T_a$ es constante durante un ensayo y que, retirado el calefactor y con la Pi fuera, no hay fuentes de calor dentro de la caja. Desde la temperatura inicial $T_0$ del precalentamiento, la caja se enfría según
+Se usa un modelo térmico de primer orden. Se supone que el aire de la caja y sus paredes tienen una temperatura uniforme $T$, que la temperatura ambiente $T_a$ es constante durante un ensayo y que, retirado el calefactor y con la Pi fuera, no hay fuentes de calor dentro de la caja. Desde la temperatura inicial $T_0$ del precalentamiento, la caja se enfría según
 
 $ C (d T) / (d t) = -(T - T_a) / R, quad T(0) = T_0 $ <ec-planta>
 
@@ -274,9 +274,9 @@ $ C (d T) / (d t) = -(T - T_a) / R, quad T(0) = T_0 $ <ec-planta>
 
 $ hat(T)_(k+1) = hat(T)_k - alpha (hat(T)_k - T_a), quad alpha = 1 - e^(-T_s \/ tau), $ <ec-disc>
 
-que tiene la misma forma que el modelo del Laboratorio 4 sin entrada de calor. El gemelo corre en *simulación libre*, es decir, usa su propia predicción y no la última medición, porque entre dos muestras la temperatura cambia unas décimas, del mismo orden que el ruido del DHT11, y el residuo a un paso no distingue un evento. En simulación libre la diferencia se acumula y supera el umbral en decenas de segundos (@kpis). El gemelo se resincroniza con la medición al inicio de cada ensayo y cuando una alarma se cierra. El detector reutiliza el índice del Lab. 4, $I_k = 0","7 I_(k-1) + 0","3 r_k$, con alarma si $|I_k| > h$ durante $m$ muestras seguidas; $h$ y $m$ se fijan con el ensayo en reposo (valores iniciales: $h = 1","5$ °C y $m = 3$).
+que es un filtro de primer orden sin entrada de calor. El gemelo corre en *simulación libre*, es decir, usa su propia predicción y no la última medición, porque entre dos muestras la temperatura cambia unas décimas, del mismo orden que el ruido del DHT11, y el residuo a un paso no distingue un evento. En simulación libre la diferencia se acumula y supera el umbral en decenas de segundos (@kpis). El gemelo se resincroniza con la medición al inicio de cada ensayo y cuando una alarma se cierra. El detector suaviza el residuo con el índice $I_k = 0","7 I_(k-1) + 0","3 r_k$, con alarma si $|I_k| > h$ durante $m$ muestras seguidas; $h$ y $m$ se fijan con el ensayo en reposo (valores iniciales: $h = 1","5$ °C y $m = 3$).
 
-*Ensayo de identificación.* (1) Medir $T_a$ con el termómetro; (2) precalentar la caja con el calefactor de invierno a distancia hasta unos 40 °C, bajo el límite de 50 °C del DHT11; (3) retirar el calefactor, cerrar la tapa y registrar el enfriamiento por al menos $3 tau$ (se estiman 30 a 60 min). Se ajusta por mínimos cuadrados la solución analítica $T(t) = T_a + (T_0 - T_a) e^(-t\/tau)$ a la curva completa, y no a las diferencias $y_(k+1) - y_k$ como en el Lab. 4, porque entre muestras esas diferencias son del orden del ruido. El mismo ensayo con la tapa abierta y con el ventilador encendido entrega $tau_"tapa"$ y $tau_"ven"$, que sirven para dimensionar el umbral. La validación usa otro enfriamiento distinto (OE2).
+*Ensayo de identificación.* (1) Medir $T_a$ con el termómetro; (2) precalentar la caja con el calefactor de invierno a distancia hasta unos 40 °C, bajo el límite de 50 °C del DHT11; (3) retirar el calefactor, cerrar la tapa y registrar el enfriamiento por al menos $3 tau$ (se estiman 30 a 60 min). Se ajusta por mínimos cuadrados la solución analítica $T(t) = T_a + (T_0 - T_a) e^(-t\/tau)$ a la curva completa, y no a las diferencias $y_(k+1) - y_k$, porque entre muestras esas diferencias son del orden del ruido. El mismo ensayo con la tapa abierta y con el ventilador encendido entrega $tau_"tapa"$ y $tau_"ven"$, que sirven para dimensionar el umbral. La validación usa otro enfriamiento distinto (OE2).
 
 = Estado de avance
 
@@ -285,8 +285,8 @@ A la fecha están el diseño de esta entrega (problema, KPI, arquitectura, model
 #grid(
   columns: (1fr, 1.25fr),
   gutter: 8pt,
-  [#figure(image("img/IMG_2363.jpg", height: 4.6cm), caption: [Montaje: DHT11 con VCC → pin 1, DATA → pin 7 y GND → pin 6 de la Pi 4.]) <foto>],
-  [#figure(image("img/captura_lectura.png", height: 4.6cm), caption: [Primeras lecturas con marca de tiempo (12-11-2026, 23:54).]) <captura>],
+  [#figure(image("img/IMG_2363.jpg", height: 5.6cm), caption: [Montaje: DHT11 con VCC → pin 1, DATA → pin 7 y GND → pin 6 de la Pi 4.]) <foto>],
+  [#figure(image("img/captura_lectura.png", height: 5.6cm), caption: [Primeras lecturas con marca de tiempo (12-11-2026, 23:54).]) <captura>],
 )
 
 *Primeras métricas del sensor.* Se registraron 60 lecturas válidas el 12-11-2026, guardadas en `datos/lecturas_dht11.csv` del repositorio. En las dos primeras sesiones hubo 20 lecturas válidas de 31 intentos (65 %); los fallos son errores de verificación propios del DHT11 y el script reintenta. El período efectivo entre lecturas válidas fue de 3,3 s, sobre los 2 s de diseño. El sensor entrega décimas de grado, aunque su exactitud nominal es de $plus.minus 2$ °C. Estas cifras confirman el primer riesgo de la @riesgos y justifican la persistencia del detector.
