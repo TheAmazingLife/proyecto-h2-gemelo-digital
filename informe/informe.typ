@@ -320,7 +320,7 @@ La @pruebas define los casos. Todos se registran en el CSV de la Pi y en el SQLi
 
 = Plan de trabajo y riesgos
 
-La @plan reparte las actividades desde el 13-11-2026 hasta la entrega final (fecha por confirmar con el equipo docente). Las semanas 1 y 2 cierran la cadena MQTT y dejan la planta lista; desde la semana 3 el trabajo apunta a medir los KPI contra sus metas.
+La @plan reparte las actividades según la planificación del curso, desde el 13-11-2026 hasta las presentaciones de proyectos del 30-11 y el 3-12-2026. La semana 14 tiene el certamen (16-11), por eso concentra el trabajo que no depende de ensayos largos.
 
 #figure(
   text(size: 8.5pt)[
@@ -330,19 +330,16 @@ La @plan reparte las actividades desde el 13-11-2026 hasta la entrega final (fec
       stroke: 0.5pt + luma(180),
       inset: 4pt,
       table.header([*Semana*], [*Actividad*], [*Responsable*], [*Fechas*]),
-      [0], [Pi con sistema, red y SSH; DHT11 conectado; primera lectura con marca de tiempo; foto del montaje], [Todos], [hecho, 12 nov],
-      [1], [Broker Mosquitto, publicador con el DHT11 y gemelo base que guarda en SQLite; primeras métricas (P2)], [Joaquín San Martín], [13–19 nov],
-      [1], [Caja con tapa y orificio para cables; verificación del DHT11 con el termómetro (P8)], [Antonia Guajardo], [13–19 nov],
-      [2], [Prueba de precalentamiento y primer enfriamiento completo; estimación inicial de $tau$], [Antonia Guajardo, Tomás Cárdenas], [20–26 nov],
-      [2], [Usuario y clave en Mosquitto y validación de mensajes en el gemelo (P6); TLS si alcanza], [Joaquín San Martín], [20–26 nov],
-      [3], [Ensayo de identificación y ajuste de $tau$, $tau_"tapa"$ y $tau_"ven"$; validación (OE2)], [Matías Urrea], [27 nov–3 dic],
-      [3–4], [Detector (residuo, índice, persistencia), calibración del umbral con P1 y línea base de umbral fijo], [Matías Urrea, Antonia Guajardo], [27 nov–10 dic],
-      [4–5], [Experimentos P3–P5 y P7 con $N >= 5$; cálculo de KPI], [Todos (coordina Tomás Cárdenas)], [4–17 dic],
-      [5], [Visualización: curva medida, predicha y eventos marcados], [Antonia Guajardo], [11–17 dic],
-      [6], [Informe final y presentación con los KPI medidos contra sus metas], [Todos (coordina Joaquín San Martín)], [18 dic – por confirmar],
+      [11–13], [Pi con sistema, red y SSH; DHT11 conectado; primera lectura con marca de tiempo; foto del montaje], [Todos], [hecho, 12 nov],
+      [14], [Broker Mosquitto, publicador con el DHT11 y gemelo base que guarda en SQLite; primeras métricas MQTT (P2)], [Joaquín San Martín], [13–19 nov],
+      [14], [Caja con tapa y orificio para cables; verificación del DHT11 con el termómetro (P8)], [Antonia Guajardo], [13–19 nov],
+      [15], [Ensayo de enfriamiento e identificación de $tau$, $tau_"tapa"$ y $tau_"ven"$; validación (OE2)], [Matías Urrea, Tomás Cárdenas], [20–24 nov],
+      [15], [Detector (residuo, índice, persistencia), umbral con P1, línea base de umbral fijo; usuario y clave en Mosquitto (P6)], [Joaquín San Martín, Antonia Guajardo], [20–26 nov],
+      [15–16], [Experimentos P3–P5 y P7 con $N >= 5$; cálculo de KPI; gráfico de curva medida, predicha y eventos], [Todos (coordina Tomás Cárdenas)], [25–28 nov],
+      [16], [Informe final y presentación con los KPI medidos contra sus metas], [Todos (coordina Joaquín San Martín)], [30 nov / 3 dic],
     )
   ],
-  caption: [Plan de trabajo hasta la entrega final. Fechas aproximadas.]
+  caption: [Plan de trabajo por semana del curso hasta las presentaciones.]
 ) <plan>
 
 #figure(
